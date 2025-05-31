@@ -2,12 +2,30 @@
 import os
 
 def pedir_lista_peliculas():
+    while True:
+        entrada = input("¿Cuántas películas quieres ingresar? (mínimo 2): ")
+        try:
+            n = int(entrada)
+            if n < 2:
+                print(" Debes ingresar al menos 2 películas para continuar con el proceso de ordenarlas o buscarlas.")
+                continue
+            break
+        except ValueError:
+            print("  Entrada inválida. Debes ingresar un número entero.")
+
     lista = []
-    n = int(input("¿Cuántas películas quieres ingresar? "))
     for i in range(n):
         print(f"\nPelícula {i+1}:")
         titulo = input("  Título: ")
-        anio = int(input("  Año: "))
+
+        while True:
+            anio_str = input("  Año: ")
+            if anio_str.isdigit():
+                anio = int(anio_str)
+                break
+            else:
+                print(" El año debe ser un número entero.")
+
         director = input("  Director: ")
         lista.append({"titulo": titulo, "anio": anio, "director": director})
     return lista
@@ -106,7 +124,7 @@ def linear_search_peliculas(lista, valor, clave="titulo"):
     pasos.append(f"Elemento '{valor}' no encontrado en la lista.")
     return -1, pasos, comparaciones
 
-# Búsqueda binaria
+# Búsqueda binaria.
 
 
 def binary_search_peliculas(lista, valor, clave="titulo"):
