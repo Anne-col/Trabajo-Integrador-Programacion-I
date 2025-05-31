@@ -6,6 +6,86 @@ from peliculas_utils import (
     guardar_ordenamiento_en_archivo
 )
 
+import time  # Importamos el modulo 'time' para poder medir cuanto tarda cada proceso (ordenar y buscar)
+
+def ejecutar_ejemplo_lista_larga():
+    print("\n=== EJEMPLO CON LISTA LARGA ===")  # Indicamos el inicio de este ejemplo especial
+    print(" Generando automáticamente 100 películas...")  # Le informamos al usuario lo que vamos a hacer
+
+    # Generamos una lista con 100 peliculas. Cada pelicula es un diccionario con titulo, año y director.
+    # El titulo va de 'Pelicula 001' a 'Pelicula 100'
+    # El año va de 1980 y 2019
+    # El director va de la A-Z 
+    peliculas = [
+        {"titulo": f"Pelicula {i+1:03}", "anio": 1980 + (i % 40), "director": f"Director {chr(65 + i % 26)}"}
+        for i in range(100)
+    ]
+
+    # Definimos con que clave/dato vamos a trabajar: en este caso, el 'titulo' de las peliculas
+    clave = "titulo"
+
+    print(" Por el tamaño de la lista, se ordenará automáticamente con QuickSort.")  # Le explicamos al usuario por qué QuickSort
+
+    # MEDICIÓN DEL TIEMPO DE ORDENAMIENTO
+    start_sort = time.time()  # Empezamos a contar el tiempo antes de ordenar
+
+    # Ordenamos la lista usando QuickSort (definido en peliculas_utils.py), guardamos:
+    # la lista ordenada
+    # los pasos
+    # la cantidad de comparaciones
+    # la cantidad de intercambios realizados
+    ordenadas, pasos, comps, intercambios = quicksort_peliculas(peliculas, clave)
+
+    end_sort = time.time()  # Terminamos de contar el tiempo
+    tiempo_sort = end_sort - start_sort  # Calculamos cuanto tiempo tarda el proceso de ordenamiento
+
+    # Mostramos las primeras 10 peliculas ordenadas, como una vista previa (elegimos que sean 10 ya que la lista entera es muy larga)
+    print(f"\n Primeras 10 películas ordenadas por {clave}:")
+    for i, p in enumerate(ordenadas[:10]):
+        print(f"{i+1}. {p['titulo']} ({p['anio']}) - {p['director']}")
+
+    # vamos a mostrar cuantas comparaciones e intercambios se hicieron al ordenar
+    print(f"\nComparaciones: {comps} | Intercambios: {intercambios}")
+
+    print("\n Ahora se buscará una película con búsqueda binaria (Pelicula 050)...")  # Informamos qué va a hacer el programa ahora
+
+    # MEDICIÓN DEL TIEMPO DE BÚSQUEDA
+    start_search = time.time()  # Empezamos a contar el tiempo antes de buscar
+
+    # Realizamos la busqueda binaria sobre la lista ordenada.
+    # Buscamos la pelicula 'Pelicula 050'
+    # Nos devuelve el índice donde está, los pasos realizados y la cantidad de comparaciones
+    idx, pasos_busq, comps_busq = binary_search_peliculas(ordenadas, "Pelicula 050", clave)
+
+    end_search = time.time()  # Finalizamos la medición de tiempo
+    tiempo_search = end_search - start_search  # Calculamos cuanto tarda la busqueda
+
+    # Si se encontró la película, el programa la mostrara completa; si no, indicara que no fue hallada
+    if idx != -1:
+        peli = ordenadas[idx]
+        print(f"\n Película encontrada: {peli['titulo']} ({peli['anio']}) - {peli['director']}")
+    else:
+        print("\n Película no encontrada.")
+
+    # tambien vamos a mostramos cuantas comparaciones fueron necesarias en la busqueda
+    print(f"Comparaciones en búsqueda: {comps_busq}")
+
+    # Mostramos el detalle de los pasos realizados durante la búsqueda
+    print("Pasos del algoritmo:")
+    for paso in pasos_busq:
+        print(paso)
+
+    # POR ULTIMO PASAMOS A UN RESUMEN FINAL: esta parte nos parecio importante para explicar por qué elegimos QuickSort y búsqueda binaria en este caso
+    print("\n RESUMEN:")
+    print("Se ordenó con el método QuickSort porque la lista es muy grande (100 elementos),")
+    print("lo cual lo hace más eficiente que otros algoritmos como Bubble Sort.")
+    print("Se realizó la búsqueda con el método binario porque es más rápido que la búsqueda lineal en listas ordenadas.")
+
+    # Finalmente, mostramos cuánto tiempo tardó cada uno de los dos procesos (ordenar y buscar)
+    print(f"\n Tiempo de ordenamiento: {tiempo_sort:.6f} segundos")
+    print(f" Tiempo de búsqueda: {tiempo_search:.6f} segundos")
+
+
 def mostrar_peliculas(lista):
     print("\nLista de películas:")
     for i, p in enumerate(lista):
@@ -68,6 +148,7 @@ def menu():
         print("2. Ordenar películas")
         print("3. Buscar película")
         print("4. Guardar último resultado de ordenación")
+        print("5. Ejecutar ejemplo con lista larga (100 películas precargadas)")
         print("0. Salir")
         opcion = input("Elige una opción: ")
 
@@ -148,6 +229,8 @@ def menu():
                 print("Primero debes ordenar una lista.")
                 continue
             guardar_ordenamiento_en_archivo(ordenada, ultima_clave, ultimo_metodo)
+        elif opcion == "5":
+            ejecutar_ejemplo_lista_larga()
         elif opcion == "0":
             print("¡Hasta luego!")
             break
